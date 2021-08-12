@@ -18,7 +18,9 @@ extern void verbose(const char* message, ...);
 extern void warning(const char* message, ...);
 extern std::string aprintf(const char* fmt, ...);
 extern void resettimer();
-extern uint32_t gettime();
+extern double gettime();
+extern void writebe(uint8_t* dest, uint32_t value);
+extern void pad_with_nops(std::string& stub);
 
 /* Serial port management. */
 

@@ -8,65 +8,69 @@
 
 using std::min;
 
+#include ".obj/stubs/read_stub.h"
+
 /* --- Read RAM ---------------------------------------------------------- */
 
-static void exec_read(const char* filename, uint32_t start)
+static void exec_read(const char* filename, uint32_t start, uint32_t length)
 {
-	error("read unsupported");
-#if 0
-	FILE* fp = fopen(filename, "rb");
+	FILE* fp = fopen(filename, "wb");
 	if (!fp)
 		error("Could not open output file: %s", strerror(errno));
 
-	fseek(fp, 0, SEEK_END);
-	uint32_t length = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
+	printf("Reading '%s' from RAM at address 0x%08X:\n", filename, start);
 
-	printf("Writing '%s' to RAM at address 0x%08X:\n", filename, start);
+	std::string stub((char*)_obj_stubs_read_bin, _obj_stubs_read_bin_len);
+	writebe((uint8_t*) &stub[2], start);
+	writebe((uint8_t*) &stub[8], length);
+	pad_with_nops(stub);
 
-	resettimer();
-	Packet p;
-	p.request = PACKET_WRITE;
+	brecord_write(0xffffffc0, stub.size(), (const uint8_t*) &stub[0]);
+	brecord_execute(0xffffffc0);
 
 	uint32_t count = 0;
-	for (;;)
+	auto progress = [&]() {
+		printf("\r% 3.0f%% complete: %d bytes (%.0f Bps)",
+				(100.0*count) / length,
+				count, count / gettime());
+	};
+
+	resettimer();
+	while (count < length)
 	{
-		int i = fread(p.data+6, 1, MaximumPacketSize-8, fp);
-		if (i == 0)
-			break;
+		uint8_t b = recvbyte();
+		fputc(b, fp);
 
-		p.length = 6 + i;
-		p.setq(0, count+start);
-		p.sets(4, i);
-		p.write();
-		p.read();
-		p.checkresponse(0x0085);
-
-		count += i;
-
-		printf("\r%03d%% complete: %d bytes (%d Bps)",
-				(100*count) / length,
-				count, (count*1000) / gettime());
-		fflush(stdout);
+		count++;
+		if ((count & 0xff) == 0)
+		{
+			progress();
+			fflush(stdout);
+		}
 	}
-	printf("\r100\n");
+	progress();
+	putchar('\n');
 
 	fclose(fp);
-#endif
 };
 
 void cmd_read(char** argv)
 {
 	const char* filename = argv[0];
 	const char* start = filename ? argv[1] : NULL;
+	const char* length = start ? argv[2] : NULL;
 
-	if (!filename || !start || argv[2])
-		error("syntax error: read <filename> <start>");
+	if (!filename || !start || !length || argv[3])
+		error("syntax error: read <filename> <start> <length>");
 
 	int64_t s = strtoll(start, NULL, 0);
 	if ((s < 0) || (s > 0xFFFFFFFF))
 		error("syntax error: address range out of bounds");
 
-	exec_read(filename, s);
+	int64_t e = strtoll(length, NULL, 0);
+	if ((e < 0) || (e > 0xFFFFFFFF))
+		error("syntax error: address range out of bounds");
+
+	exec_read(filename, s, e);
 };
 

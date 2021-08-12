@@ -8,49 +8,52 @@
 
 using std::min;
 
+#include ".obj/stubs/write_stub.h"
+
 /* --- Write RAM --------------------------------------------------------- */
 
 static void exec_write(const char* filename, uint32_t start)
 {
 	FILE* fp = fopen(filename, "rb");
 	if (!fp)
-		error("Could not open output file: %s", strerror(errno));
+		error("Could not open input file: %s", strerror(errno));
 
 	fseek(fp, 0, SEEK_END);
 	uint32_t length = ftell(fp);
 	fseek(fp, 0, SEEK_SET);
 
-	printf("Writing '%s' to RAM at address 0x%08X:\n", filename, start);
+	printf("Writing '%s' to RAM at address 0x%08X+0x%08X:\n", filename, start, length);
 
-	resettimer();
-	error("unsupported");
-#if 0
-	Packet p;
-	p.request = PACKET_WRITE;
+	std::string stub((char*)_obj_stubs_write_bin, _obj_stubs_write_bin_len);
+	writebe((uint8_t*) &stub[2], start);
+	writebe((uint8_t*) &stub[8], length);
+	pad_with_nops(stub);
+
+	brecord_write(0xffffffc0, stub.size(), (const uint8_t*) &stub[0]);
+	brecord_execute(0xffffffc0);
 
 	uint32_t count = 0;
-	for (;;)
+	auto progress = [&]() {
+		printf("\r% 3.0f%% complete: %d bytes (%.0f Bps)",
+				(100.0*count) / length,
+				count, count / gettime());
+	};
+
+	resettimer();
+	while (count < length)
 	{
-		int i = fread(p.data+6, 1, MaximumPacketSize-8, fp);
-		if (i == 0)
-			break;
+		uint8_t b = fgetc(fp);
+		sendbyte(b);
 
-		p.length = 6 + i;
-		p.setq(0, count+start);
-		p.sets(4, i);
-		p.write();
-		p.read();
-		p.checkresponse(0x0085);
-
-		count += i;
-
-		printf("\r%03d%% complete: %d bytes (%d Bps)",
-				(100*count) / length,
-				count, (count*1000) / gettime());
-		fflush(stdout);
+		count++;
+		if ((count & 0xff) == 0)
+		{
+			progress();
+			fflush(stdout);
+		}
 	}
-	printf("\r100\n");
-#endif
+	progress();
+	putchar('\n');
 
 	fclose(fp);
 };

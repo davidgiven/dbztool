@@ -100,7 +100,7 @@ static void synchronise()
 			break;
 	}
 
-	verbose("pinging board");
+	verbose("Pinging board\n");
 
 	brecord_write(0xfffff907, 1, (const uint8_t*)"P");
 	c = recvbyte();

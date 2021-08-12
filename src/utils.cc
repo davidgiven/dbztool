@@ -65,12 +65,32 @@ void resettimer()
 	gettimeofday(&timezero, NULL);
 };
 
-uint32_t gettime()
+double gettime()
 {
 	struct timeval timenow;
 	gettimeofday(&timenow, NULL);
 
-	return ((timenow.tv_sec - timezero.tv_sec) * 1000) +
-	       ((timenow.tv_usec - timezero.tv_usec) / 1000);
+	return (timenow.tv_sec - timezero.tv_sec) +
+	       ((timenow.tv_usec - timezero.tv_usec) / 1e6);
 };
+
+void writebe(uint8_t* dest, uint32_t value)
+{
+	dest[0] = value>>24;
+	dest[1] = value>>16;
+	dest[2] = value>>8;
+	dest[3] = value;
+}
+
+void pad_with_nops(std::string& stub)
+{
+	if (stub.size() > 32)
+		error("stub is too large");
+
+	while (stub.size() < 32)
+	{
+		stub += (char)0x4e;
+		stub += (char)0x71;
+	}
+}
 

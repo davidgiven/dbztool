@@ -8,9 +8,9 @@ rule cxx
     depfile = \$out.d
     deps = gcc
     
-rule cxx68k
-    command = $CXX68K $C68KFLAGS \$flags -I. -c -o \$out \$in -MMD -MF \$out.d
-    description = CXX68K \$in
+rule cc68k
+    command = $CC68K $C68KFLAGS \$flags -I. -c -o \$out \$in -MMD -MF \$out.d
+    description = CC68K \$in
     depfile = \$out.d
     deps = gcc
     
@@ -26,6 +26,14 @@ rule library
 rule link
     command = $CXX $LDFLAGS -o \$out \$in \$flags $LIBS
     description = LINK \$in
+
+rule link68k
+    command = $LD68K $LD68KFLAGS -o \$out \$in \$flags
+    description = LINK68K \$in
+
+rule objcopy68k
+    command = $OBJCOPY68K \$in \$out \$flags
+    description = OBJCOPY68K \$in
 
 rule strip
     command = cp -f \$in \$out && $STRIP \$out
@@ -150,6 +158,21 @@ buildsimpleprogram() {
     buildlibrary lib$prog.a $flags $src
     buildprogram $prog lib$prog.a "$@"
 }
+
+buildstub() {
+    local d
+    d="$OBJDIR/stubs/$1"
+
+    echo "build $d.o : cc68k src/stubs/$1.S"
+    echo "build $d.elf : link68k $d.o"
+    echo "  flags=-Ttext=0xFFFFFFC0"
+    echo "build $d.bin : objcopy68k $d.elf"
+    echo "  flags=-O binary"
+    echo "build ${d}_stub.h : binencode $d.bin"
+}
+
+buildstub read
+buildstub write
 
 buildlibrary libdbz.a \
     src/main.cc \
