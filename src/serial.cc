@@ -15,6 +15,9 @@
 static int fd;
 static struct termios serialterm;
 
+#include ".obj/stubs/fastmode_stub.h"
+#include ".obj/stubs/ping_stub.h"
+
 static int getbaudrate(int speed)
 {
 	switch (speed)
@@ -99,10 +102,22 @@ static void synchronise()
 		if (c == '@')
 			break;
 	}
+	
+	printf("Switching to fast mode...\n");
+
+	std::string stub((char*)_obj_stubs_fastmode_bin, _obj_stubs_fastmode_bin_len);
+	pad_with_nops(stub);
+	brecord_write(0xffffffc0, stub.size(), (const uint8_t*) &stub[0]);
+	brecord_execute(0xffffffc0);
+	cfsetspeed(&serialterm, B19200);
 
 	verbose("Pinging board\n");
 
-	brecord_write(0xfffff907, 1, (const uint8_t*)"P");
+	std::string pingStub((char*)_obj_stubs_ping_bin, _obj_stubs_ping_bin_len);
+	pad_with_nops(pingStub);
+	brecord_write(0xffffffc0, pingStub.size(), (const uint8_t*) &pingStub[0]);
+	brecord_execute(0xffffffc0);
+	
 	c = recvbyte();
 	if (c != 'P')
 		error("Synchronisation error (got %02X instead of %02X).", c, 'P');
@@ -180,7 +195,7 @@ void send(const std::string& s)
 	{
 		sendbyte((uint8_t) c);
 		if (recvbyte() != c)
-			error("confused bootstrap");
+			error("corrupt transfer");
 	}
 }
 

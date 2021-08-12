@@ -173,6 +173,8 @@ buildstub() {
 
 buildstub read
 buildstub write
+buildstub fastmode
+buildstub ping
 
 buildlibrary libdbz.a \
     src/main.cc \
