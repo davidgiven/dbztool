@@ -12,6 +12,27 @@ using std::min;
 
 /* --- Read RAM ---------------------------------------------------------- */
 
+Bytes buffer_read(uint32_t start, uint32_t length)
+{
+	Bytes stub(_obj_stubs_read_bin, _obj_stubs_read_bin_len);
+	writebe32(&stub[2], start);
+	writebe32(&stub[8], length);
+	pad_with_nops(stub);
+
+	brecord_write(0xffffffc0, stub.size(), &stub[0]);
+	brecord_execute(0xffffffc0);
+
+	Bytes bytes;
+	uint32_t count = 0;
+	while (count < length)
+	{
+		bytes += recvbyte();
+		count++;
+	}
+
+	return bytes;
+}
+
 static void exec_read(const char* filename, uint32_t start, uint32_t length)
 {
 	FILE* fp = fopen(filename, "wb");
@@ -20,12 +41,12 @@ static void exec_read(const char* filename, uint32_t start, uint32_t length)
 
 	printf("Reading '%s' from RAM at address 0x%08X:\n", filename, start);
 
-	std::string stub((char*)_obj_stubs_read_bin, _obj_stubs_read_bin_len);
-	writebe((uint8_t*) &stub[2], start);
-	writebe((uint8_t*) &stub[8], length);
+	Bytes stub(_obj_stubs_read_bin, _obj_stubs_read_bin_len);
+	writebe32(&stub[2], start);
+	writebe32(&stub[8], length);
 	pad_with_nops(stub);
 
-	brecord_write(0xffffffc0, stub.size(), (const uint8_t*) &stub[0]);
+	brecord_write(0xffffffc0, stub.size(), &stub[0]);
 	brecord_execute(0xffffffc0);
 
 	uint32_t count = 0;

@@ -103,6 +103,7 @@ static void synchronise()
 			break;
 	}
 	
+	#if 0
 	printf("Switching to fast mode...\n");
 
 	std::string stub((char*)_obj_stubs_fastmode_bin, _obj_stubs_fastmode_bin_len);
@@ -121,6 +122,7 @@ static void synchronise()
 	c = recvbyte();
 	if (c != 'P')
 		error("Synchronisation error (got %02X instead of %02X).", c, 'P');
+	#endif
 }
 
 void logon()

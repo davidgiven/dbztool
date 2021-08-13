@@ -74,15 +74,7 @@ double gettime()
 	       ((timenow.tv_usec - timezero.tv_usec) / 1e6);
 };
 
-void writebe(uint8_t* dest, uint32_t value)
-{
-	dest[0] = value>>24;
-	dest[1] = value>>16;
-	dest[2] = value>>8;
-	dest[3] = value;
-}
-
-void pad_with_nops(std::string& stub)
+void pad_with_nops(Bytes& stub)
 {
 	if (stub.size() > 32)
 		error("stub is too large");
@@ -92,5 +84,18 @@ void pad_with_nops(std::string& stub)
 		stub += (char)0x4e;
 		stub += (char)0x71;
 	}
+}
+
+void writebe32(uint8_t* dest, uint32_t value)
+{
+	dest[0] = value>>24;
+	dest[1] = value>>16;
+	dest[2] = value>>8;
+	dest[3] = value;
+}
+
+uint16_t readbe16(const uint8_t* ptr)
+{
+	return (ptr[0] << 8) | ptr[1];
 }
 

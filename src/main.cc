@@ -31,6 +31,8 @@ static void show_help()
 		"              Reads data from RAM into the specified file\n"
 		"   write <filename> <startaddress>\n"
 		"              Writes data from the specified file into RAM\n"
+		"   cs\n"
+		"              Reads and displays the chip select register status\n"
 		"Addresses should begin 0x if you want them in hex.\n"
 		"WARNING. Use this program at your own risk. The author accepts no responsibility\n"
 		"    for any damage this program may do to your hardware. You have been warned!\n",
@@ -100,6 +102,11 @@ int main(int _argc, char* _argv[])
 	{
 		logon();
 		cmd_write(argv);
+	}
+	else if (strcmp(cmd, "cs") == 0)
+	{
+		logon();
+		cmd_cs(argv);
 	}
 	else
 		error("unrecognised command! Try '-h' for a usage summary.");

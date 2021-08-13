@@ -24,12 +24,12 @@ static void exec_write(const char* filename, uint32_t start)
 
 	printf("Writing '%s' to RAM at address 0x%08X+0x%08X:\n", filename, start, length);
 
-	std::string stub((char*)_obj_stubs_write_bin, _obj_stubs_write_bin_len);
-	writebe((uint8_t*) &stub[2], start);
-	writebe((uint8_t*) &stub[8], length);
+	Bytes stub(_obj_stubs_write_bin, _obj_stubs_write_bin_len);
+	writebe32(&stub[2], start);
+	writebe32(&stub[8], length);
 	pad_with_nops(stub);
 
-	brecord_write(0xffffffc0, stub.size(), (const uint8_t*) &stub[0]);
+	brecord_write(0xffffffc0, stub.size(), &stub[0]);
 	brecord_execute(0xffffffc0);
 
 	uint32_t count = 0;

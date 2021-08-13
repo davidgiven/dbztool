@@ -183,6 +183,7 @@ buildlibrary libdbz.a \
     src/read.cc \
     src/write.cc \
     src/execute.cc \
+    src/cs.cc \
     src/brecord.cc \
 
 buildprogram dbztool \
