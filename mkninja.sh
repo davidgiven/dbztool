@@ -186,6 +186,7 @@ buildlibrary libdbz.a \
     src/cs.cc \
     src/ping.cc \
     src/brecord.cc \
+    src/mc68328.cc \
 
 buildprogram dbztool \
     libdbz.a

@@ -93,21 +93,20 @@ void cmd_cs(char** argv)
 			if (!argv[arg+1])
 				error("syntax error: cs [<name> <value>...]");
 
-			std::string name = argv[arg];
+			const char* name = argv[arg];
 			uint16_t value = strtoul(argv[arg+1], nullptr, 0);
 			arg += 2;
 
-			const auto& i = cs_registers.find(name);
-			if (i == cs_registers.end())
+			const Register* reg = find_register(name);
+			if (!reg)
 				error("unknown register name");
-			uint32_t address = i->second;
 
-			printf("setting %s at %08x to %04x\n", name.c_str(), address, value);
+			printf("setting %s at %08x to %04x\n", name, reg->address, value);
 			Bytes data;
 			data.resize(2);
 			writebe16(&data[0], value);
 
-			brecord_write(address, 2, &data[0]);
+			brecord_write(reg->address, 2, &data[0]);
 		}
 	}
 };

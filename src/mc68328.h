@@ -14,5 +14,13 @@
 #define CSD     0xfffff116
 #define EMUCS   0xfffff118
 
+struct Register
+{
+	uint32_t address;
+	int width;
+};
+
+extern const Register* find_register(const char* name);
+
 #endif
 
