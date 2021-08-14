@@ -52,34 +52,6 @@ void cmd_showreg(char** argv)
 
 	sendbyte(0);
 	sendbyte(0);
-#if 0
-	int arg = 0;
-	while (argv[arg])
-	{
-		if (!argv[arg+1])
-			error("syntax error: setreg [<name> <value>...]");
-
-		const char* name = argv[arg];
-		uint16_t value = strtoul(argv[arg+1], nullptr, 0);
-		arg += 2;
-
-		const Register* reg = find_register(name);
-		if (!reg)
-			error("unknown register name");
-
-		printf("Setting %s at %08x to %04x\n", name, reg->address, value);
-		Bytes data;
-		data.resize(reg->width);
-		switch (reg->width)
-		{
-			case 1: data[0] = value; break;
-			case 2: writebe16(&data[0], value); break;
-			case 4: writebe32(&data[0], value); break;
-		}
-
-		brecord_write(reg->address, reg->width, &data[0]);
-	}
-#endif
 }
 
 
