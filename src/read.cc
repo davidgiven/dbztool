@@ -6,8 +6,6 @@
 #include "globals.h"
 #include <algorithm>
 
-using std::min;
-
 #include ".obj/stubs/read_stub.h"
 
 /* --- Read RAM ---------------------------------------------------------- */

@@ -31,6 +31,8 @@ static void show_help()
 		"              Reads data from RAM into the specified file\n"
 		"   write <filename> <startaddress>\n"
 		"              Writes data from the specified file into RAM\n"
+		"   setreg [<name> <value>...]\n"
+		"              Sets one of more I/O registers\n"
 		"   cs\n"
 		"              Reads and displays the chip select register status\n"
 		"Addresses should begin 0x if you want them in hex.\n"
@@ -105,6 +107,16 @@ int main(int _argc, char* _argv[])
 	{
 		logon();
 		cmd_write(argv);
+	}
+	else if (strcmp(cmd, "setreg") == 0)
+	{
+		logon();
+		cmd_setreg(argv);
+	}
+	else if (strcmp(cmd, "showreg") == 0)
+	{
+		logon();
+		cmd_showreg(argv);
 	}
 	else if (strcmp(cmd, "cs") == 0)
 	{

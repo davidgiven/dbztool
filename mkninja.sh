@@ -175,6 +175,7 @@ buildstub read
 buildstub write
 buildstub fastmode
 buildstub ping
+buildstub readregs
 buildstub writeregs
 
 buildlibrary libdbz.a \
@@ -186,6 +187,8 @@ buildlibrary libdbz.a \
     src/execute.cc \
     src/cs.cc \
     src/ping.cc \
+    src/setreg.cc \
+    src/showreg.cc \
     src/brecord.cc \
     src/mc68328.cc \
 
