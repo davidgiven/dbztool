@@ -12,11 +12,12 @@
 #include <limits.h>
 #include "globals.h"
 
+//#define SPEW_TRACING
+
 static int fd;
 static struct termios serialterm;
 
 #include ".obj/stubs/fastmode_stub.h"
-#include ".obj/stubs/ping_stub.h"
 
 static int getbaudrate(int speed)
 {
@@ -68,7 +69,7 @@ static void synchronise()
 
 	unsigned char c;
 
-	printf("Waiting for device reset...\n");
+	verbose("Waiting for device reset...\n");
 
 	for (;;)
 	{
@@ -114,14 +115,6 @@ static void synchronise()
 
 	verbose("Pinging board\n");
 
-	std::string pingStub((char*)_obj_stubs_ping_bin, _obj_stubs_ping_bin_len);
-	pad_with_nops(pingStub);
-	brecord_write(0xffffffc0, pingStub.size(), (const uint8_t*) &pingStub[0]);
-	brecord_execute(0xffffffc0);
-	
-	c = recvbyte();
-	if (c != 'P')
-		error("Synchronisation error (got %02X instead of %02X).", c, 'P');
 	#endif
 }
 

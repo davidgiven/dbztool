@@ -5,10 +5,25 @@
 #include <errno.h>
 #include "globals.h"
 #include "mc68328.h"
-#include <algorithm>
+#include <map>
 
 static const char* size_tab[] = {
 	"32kB", "64kB", "128kB", "256kB", "512kB", "1MB", "2MB", "4MB", "8MB", "16MB"
+};
+
+static const std::map<std::string, uint32_t> cs_registers = {
+	{ "CSGBA", CSGBA },
+	{ "CSGBB", CSGBB },
+	{ "CSGBC", CSGBC },
+	{ "CSGBD", CSGBD },
+	{ "CSA", CSA },
+	{ "CSB", CSB },
+	{ "CSC", CSC },
+	{ "CSD", CSD },
+	{ "CSUGBA", CSUGBA },
+	{ "CEMUCS", EMUCS },
+	{ "CSCTRL1", CSCTRL1 },
+	{ "CSCTRL2", CSCTRL2 },
 };
 
 void cmd_cs(char** argv)
@@ -71,7 +86,30 @@ void cmd_cs(char** argv)
 		showregion(csd, csgbd, 3, "D");
 	}
 	else
-		error("syntax error: cs");
+	{
+		int arg = 0;
+		while (argv[arg])
+		{
+			if (!argv[arg+1])
+				error("syntax error: cs [<name> <value>...]");
+
+			std::string name = argv[arg];
+			uint16_t value = strtoul(argv[arg+1], nullptr, 0);
+			arg += 2;
+
+			const auto& i = cs_registers.find(name);
+			if (i == cs_registers.end())
+				error("unknown register name");
+			uint32_t address = i->second;
+
+			printf("setting %s at %08x to %04x\n", name.c_str(), address, value);
+			Bytes data;
+			data.resize(2);
+			writebe16(&data[0], value);
+
+			brecord_write(address, 2, &data[0]);
+		}
+	}
 };
 
 

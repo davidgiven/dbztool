@@ -85,7 +85,10 @@ int main(int _argc, char* _argv[])
 
 	argv++;
 	if (strcmp(cmd, "ping") == 0)
+	{
 		logon();
+		cmd_ping(argv);
+	}
 	else if (strcmp(cmd, "term") == 0)
 		dodgyterm();
 	else if (strcmp(cmd, "execute") == 0)

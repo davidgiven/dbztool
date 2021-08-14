@@ -86,6 +86,12 @@ void pad_with_nops(Bytes& stub)
 	}
 }
 
+void writebe16(uint8_t* dest, uint16_t value)
+{
+	dest[0] = value>>8;
+	dest[1] = value;
+}
+
 void writebe32(uint8_t* dest, uint32_t value)
 {
 	dest[0] = value>>24;

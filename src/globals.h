@@ -21,6 +21,7 @@ extern std::string aprintf(const char* fmt, ...);
 extern void resettimer();
 extern double gettime();
 extern void pad_with_nops(Bytes& stub);
+extern void writebe16(uint8_t* dest, uint16_t value);
 extern void writebe32(uint8_t* dest, uint32_t value);
 extern uint16_t readbe16(const uint8_t* ptr);
 
@@ -45,6 +46,7 @@ extern void cmd_write(char** argv);
 extern void cmd_read(char** argv);
 extern void cmd_execute(char** argv);
 extern void cmd_cs(char** argv);
+extern void cmd_ping(char** argv);
 
 #endif
 

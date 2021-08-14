@@ -184,6 +184,7 @@ buildlibrary libdbz.a \
     src/write.cc \
     src/execute.cc \
     src/cs.cc \
+    src/ping.cc \
     src/brecord.cc \
 
 buildprogram dbztool \
