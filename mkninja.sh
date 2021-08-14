@@ -175,6 +175,7 @@ buildstub read
 buildstub write
 buildstub fastmode
 buildstub ping
+buildstub writeregs
 
 buildlibrary libdbz.a \
     src/main.cc \
