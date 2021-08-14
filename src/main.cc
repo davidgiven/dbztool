@@ -30,9 +30,11 @@ static void show_help()
 		"   dump <startaddress> <length>\n"
 		"              Does a hex dump of the specified memory\n"
 		"   read <filename> <startaddress> <length>\n"
-		"              Reads data from RAM into the specified file\n"
+		"              Reads data from memory into the specified file\n"
 		"   write <filename> <startaddress>\n"
-		"              Writes data from the specified file into RAM\n"
+		"              Writes data from the specified file into memory\n"
+		"   fill <startaddress> <length> <byte>\n"
+		"              Fills memory with the specified value\n"
 		"   setreg [<name> <value>...]\n"
 		"              Sets one of more I/O registers\n"
 		"   cs\n"
@@ -114,6 +116,11 @@ int main(int _argc, char* _argv[])
 	{
 		logon();
 		cmd_write(argv);
+	}
+	else if (strcmp(cmd, "fill") == 0)
+	{
+		logon();
+		cmd_fill(argv);
 	}
 	else if (strcmp(cmd, "setreg") == 0)
 	{

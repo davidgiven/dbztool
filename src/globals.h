@@ -48,6 +48,7 @@ extern Bytes buffer_read(uint32_t start, uint32_t length);
 extern void cmd_cs(char** argv);
 extern void cmd_dump(char** argv);
 extern void cmd_execute(char** argv);
+extern void cmd_fill(char** argv);
 extern void cmd_ping(char** argv);
 extern void cmd_read(char** argv);
 extern void cmd_setreg(char** argv);

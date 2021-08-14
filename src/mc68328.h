@@ -4,6 +4,7 @@
 #define SCR		 0xfffff000
 #define PCR      0xfffff003
 #define IDR      0xfffff004
+#define IODCR    0xfffff008
 #define CSGBA	 0xfffff100
 #define CSGBB    0xfffff102
 #define CSGBC    0xfffff104

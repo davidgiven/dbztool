@@ -75,7 +75,7 @@ void cmd_cs(char** argv)
 			(cs & 0x4000) ? "SOP " : "",
 			(cs & 0x2000) ? "ROP " : "",
 			(cs & 0x0200) ? "DRAM " : "",
-			(cs & 0x0100) ? "F " : "",
+			(cs & 0x0100) ? "FLASH " : "",
 			(cs & 0x0080) ? "16bit " : "8bit ",
 			(cs & 0x0001) ? "ENABLED" : "!enabled");
 	};

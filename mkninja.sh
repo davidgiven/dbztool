@@ -177,6 +177,7 @@ buildstub fastmode
 buildstub ping
 buildstub readregs
 buildstub writeregs
+buildstub fill
 
 buildlibrary libdbz.a \
     src/main.cc \
@@ -185,6 +186,7 @@ buildlibrary libdbz.a \
     src/read.cc \
     src/write.cc \
     src/execute.cc \
+    src/fill.cc \
     src/cs.cc \
     src/ping.cc \
     src/setreg.cc \

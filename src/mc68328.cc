@@ -13,6 +13,7 @@ static const std::map<std::string, Register> registers =
 	{ "SCR", 	  { SCR, 1 }},
 	{ "PCR", 	  { PCR, 1 }},
 	{ "IDR", 	  { IDR, 4 }},
+	{ "IODCR",    { IODCR, 2 }},
 	{ "CSGBA", 	  { CSGBA, 2 }},
 	{ "CSGBB", 	  { CSGBB, 2 }},
 	{ "CSGBC", 	  { CSGBC, 2 }},
