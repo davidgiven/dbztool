@@ -61,7 +61,7 @@ void cmd_cs(char** argv)
 		if (which <= 1)
 			siz += 2;
 
-		uint32_t base = csgb << 14;
+		uint32_t base = csgb << 13;
 		if (csugba & 0x8000)
 			base |= (csugba << (1 + which*4)) & 0xe0000000;
 
