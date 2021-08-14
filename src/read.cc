@@ -31,6 +31,36 @@ Bytes buffer_read(uint32_t start, uint32_t length)
 	return bytes;
 }
 
+void exec_dump(uint32_t start, uint32_t length)
+{
+	Bytes stub(_obj_stubs_read_bin, _obj_stubs_read_bin_len);
+	writebe32(&stub[2], start);
+	writebe32(&stub[8], length);
+	pad_with_nops(stub);
+
+	brecord_write(0xffffffc0, stub.size(), &stub[0]);
+	brecord_execute(0xffffffc0);
+
+	Bytes bytes;
+	uint32_t count = 0;
+
+	auto flush = [&]()
+	{
+		hexdump(start, &bytes[0], bytes.size());
+		start += bytes.size();
+		bytes.resize(0);
+	};
+
+	while (count < length)
+	{
+		bytes += recvbyte();
+		count++;
+		if (bytes.size() == 16)
+			flush();
+	}
+	flush();
+}
+
 static void exec_read(const char* filename, uint32_t start, uint32_t length)
 {
 	FILE* fp = fopen(filename, "wb");
@@ -91,5 +121,24 @@ void cmd_read(char** argv)
 		error("syntax error: address range out of bounds");
 
 	exec_read(filename, s, e);
+};
+
+void cmd_dump(char** argv)
+{
+	const char* start = argv[0];
+	const char* length = start ? argv[1] : NULL;
+
+	if (!start || !length || argv[2])
+		error("syntax error: dump <start> <length>");
+
+	int64_t s = strtoll(start, NULL, 0);
+	if ((s < 0) || (s > 0xFFFFFFFF))
+		error("syntax error: address range out of bounds");
+
+	int64_t e = strtoll(length, NULL, 0);
+	if ((e < 0) || (e > 0xFFFFFFFF))
+		error("syntax error: address range out of bounds");
+
+	exec_dump(s, e);
 };
 

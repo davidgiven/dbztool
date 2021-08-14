@@ -26,6 +26,7 @@ extern void writebe16(uint8_t* dest, uint16_t value);
 extern void writebe32(uint8_t* dest, uint32_t value);
 extern uint16_t readbe16(const uint8_t* ptr);
 extern uint32_t readbe32(const uint8_t* ptr);
+extern void hexdump(uint32_t address, const uint8_t* data, size_t size);
 
 /* Serial port management. */
 
@@ -45,6 +46,7 @@ extern void brecord_write(uint32_t addr, uint8_t count, const uint8_t* data);
 extern Bytes buffer_read(uint32_t start, uint32_t length);
 
 extern void cmd_cs(char** argv);
+extern void cmd_dump(char** argv);
 extern void cmd_execute(char** argv);
 extern void cmd_ping(char** argv);
 extern void cmd_read(char** argv);

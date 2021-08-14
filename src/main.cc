@@ -27,6 +27,8 @@ static void show_help()
 		"   term       Start simple serial terminal\n"
 		"   execute <address>\n"
 		"              Executes an on-device program and enters the terminal\n"
+		"   dump <startaddress> <length>\n"
+		"              Does a hex dump of the specified memory\n"
 		"   read <filename> <startaddress> <length>\n"
 		"              Reads data from RAM into the specified file\n"
 		"   write <filename> <startaddress>\n"
@@ -102,6 +104,11 @@ int main(int _argc, char* _argv[])
 	{
 		logon();
 		cmd_read(argv);
+	}
+	else if (strcmp(cmd, "dump") == 0)
+	{
+		logon();
+		cmd_dump(argv);
 	}
 	else if (strcmp(cmd, "write") == 0)
 	{

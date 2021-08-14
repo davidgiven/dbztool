@@ -110,3 +110,44 @@ uint32_t readbe32(const uint8_t* ptr)
 	return (ptr[0] << 24) | (ptr[1] << 16) | (ptr[2] << 8) | ptr[3];
 }
 
+void hexdump(uint32_t address, const uint8_t* data, size_t size)
+{
+	int i;
+	size_t pos = 0;
+
+	while (pos < size)
+	{
+		printf("%08x : ", address+pos);
+		for (i=0; i<16; i++)
+		{
+			if ((pos+i) < size)
+			{
+				uint8_t c = ((uint8_t*)data)[i+pos];
+				printf("%02x", c);
+			}
+			else
+				printf("  ");
+			putchar(' ');
+		}
+
+		printf(" : ");
+		for (i=0; i<16; i++)
+		{
+			if ((pos+i) < size)
+			{
+				uint8_t c = ((uint8_t*)data)[i+pos];
+				if ((c >= 32) && (c <= 126))
+					putchar(c);
+				else
+					putchar('.');
+			}
+			else
+				putchar(' ');
+		}
+
+		pos += 16;
+		putchar('\n');
+	}
+}
+
+
