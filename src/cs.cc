@@ -58,12 +58,14 @@ void cmd_cs(char** argv)
 	auto showregion = [&](uint16_t cs, uint16_t csgb, int which, const char* name)
 	{
 		int siz = (cs & 0x000e) >> 1;
-		if (which <= 1)
+		if ((which == 3) && (csctrl1 & (1<<6)))
+			siz += 8;
+		else if (which <= 1)
 			siz += 2;
 
 		uint32_t base = csgb << 13;
 		if (csugba & 0x8000)
-			base |= (csugba << (1 + which*4)) & 0xe0000000;
+			base |= ((uint32_t)csugba << (17 + which*4)) & 0xe0000000;
 
 		int ws = ((cs & 0x0030) >> 3) | ((csctrl1 >> (8 + which)) & 1);
 
