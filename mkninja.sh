@@ -159,15 +159,63 @@ buildsimpleprogram() {
     buildprogram $prog lib$prog.a "$@"
 }
 
+build68k() {
+    local prog
+    prog=$1
+    shift
+
+    local textaddr
+    textaddr=0xffffffc0
+    local deps
+    deps=
+    while true; do
+        case $1 in
+            -d)
+                deps="$deps $2"
+                shift
+                shift
+                ;;
+
+            -text)
+                textaddr="$2"
+                shift
+                shift
+                ;;
+
+            -*)
+                flags="$flags $1"
+                shift
+                ;;
+
+            *)
+                break
+        esac
+    done
+
+    local oobjs
+    local dobjs
+    oobjs=
+    dobjs=
+    for src in "$@"; do
+        local obj
+        obj="$OBJDIR/opt/${src%%.*}.o"
+        oobjs="$oobjs $obj"
+
+        echo "build $obj : cc68k $src"
+        echo "  flags = $flags"
+    done
+
+    echo "build $prog.elf : link68k $oobjs"
+    echo "  flags=-Ttext=$textaddr"
+    echo "build $prog.bin : objcopy68k $prog.elf"
+    echo "  flags=-O binary"
+}
+
 buildstub() {
     local d
     d="$OBJDIR/stubs/$1"
 
-    echo "build $d.o : cc68k src/stubs/$1.S"
-    echo "build $d.elf : link68k $d.o"
-    echo "  flags=-Ttext=0xFFFFFFC0"
-    echo "build $d.bin : objcopy68k $d.elf"
-    echo "  flags=-O binary"
+    build68k $d -text 0xffffffc0 src/stubs/$1.S
     echo "build ${d}_stub.h : binencode $d.bin"
 }
 
@@ -178,6 +226,11 @@ buildstub ping
 buildstub readregs
 buildstub writeregs
 buildstub fill
+
+build68k $OBJDIR/parachute \
+    -text 0 \
+    src/parachute/vectors.S \
+    src/parachute/serial.c \
 
 buildlibrary libdbz.a \
     src/main.cc \

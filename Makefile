@@ -10,6 +10,7 @@ export CC68K = m68k-linux-gnu-gcc
 export LD68K = m68k-linux-gnu-ld
 export OBJCOPY68K = m68k-linux-gnu-objcopy
 
+export C68KFLAGS = -g -Os -fomit-frame-pointer -march=68000
 export OBJDIR = .obj
 
 all: .obj/build.ninja
