@@ -5,8 +5,6 @@
 #include <errno.h>
 #include "globals.h"
 
-/* --- Execute code ------------------------------------------------------ */
-
 static void exec_execute(uint32_t address)
 {
 	brecord_execute(address);

@@ -168,6 +168,8 @@ build68k() {
     textaddr=0xffffffc0
     local deps
     deps=
+    local hdr
+    hdr=
     while true; do
         case $1 in
             -d)
@@ -178,6 +180,12 @@ build68k() {
 
             -text)
                 textaddr="$2"
+                shift
+                shift
+                ;;
+
+            -header)
+                hdr="$2"
                 shift
                 shift
                 ;;
@@ -209,43 +217,42 @@ build68k() {
     echo "  flags=-Ttext=$textaddr"
     echo "build $prog.bin : objcopy68k $prog.elf"
     echo "  flags=-O binary"
+    if [ "$hdr" != "" ]; then
+        echo "build ${hdr} : binencode $prog.bin"
+    fi
 }
 
 buildstub() {
     local d
     d="$OBJDIR/stubs/$1"
 
-    build68k $d -text 0xffffffc0 src/stubs/$1.S
-    echo "build ${d}_stub.h : binencode $d.bin"
+    build68k $d -header ${d}_stub.h -text 0xffffffc0 src/stubs/$1.S
 }
 
-buildstub read
-buildstub write
 buildstub fastmode
-buildstub ping
-buildstub readregs
-buildstub writeregs
 buildstub fill
-
-build68k $OBJDIR/parachute \
-    -text 0 \
-    src/parachute/vectors.S \
-    src/parachute/serial.c \
+buildstub getsp
+buildstub ping
+buildstub read
+buildstub readregs
+buildstub write
+buildstub writeregs
 
 buildlibrary libdbz.a \
-    src/main.cc \
-    src/utils.cc \
-    src/serial.cc \
-    src/read.cc \
-    src/write.cc \
+    src/brecord.cc \
+    src/cs.cc \
     src/execute.cc \
     src/fill.cc \
-    src/cs.cc \
+    src/getsp.cc \
+    src/main.cc \
+    src/mc68328.cc \
     src/ping.cc \
+    src/read.cc \
+    src/serial.cc \
     src/setreg.cc \
     src/showreg.cc \
-    src/brecord.cc \
-    src/mc68328.cc \
+    src/utils.cc \
+    src/write.cc \
 
 buildprogram dbztool \
     libdbz.a

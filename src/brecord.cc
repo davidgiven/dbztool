@@ -21,4 +21,14 @@ void brecord_write(uint32_t addr, uint8_t count, const uint8_t* data)
 		send(aprintf("%02X", data[i]));
 }
 
+void brecord_write_bytes(uint32_t addr, uint8_t count, uint8_t value)
+{
+	if (count == 0)
+		return;
+
+	send(aprintf("\n%08X%02X", addr, count));
+	for (int i=0; i<count; i++)
+		send(aprintf("%02X", value));
+}
+
 

@@ -10,14 +10,19 @@
 
 static void exec_fill(uint32_t start, uint32_t length, uint8_t value)
 {
-	Bytes stub(_obj_stubs_fill_bin, _obj_stubs_fill_bin_len);
-	writebe32(&stub[2], start);
-	writebe32(&stub[8], length);
-	writebe16(&stub[14], value);
-	pad_with_nops(stub);
+	resettimer();
+	if (length > _obj_stubs_fill_bin_len)
+	{
+		Bytes stub(_obj_stubs_fill_bin, _obj_stubs_fill_bin_len);
+		writebe32(&stub[2], start + _obj_stubs_fill_bin_len);
+		writebe32(&stub[8], length - _obj_stubs_fill_bin_len);
+		writebe16(&stub[14], value);
 
-	brecord_write(0xffffffc0, stub.size(), &stub[0]);
-	brecord_execute(0xffffffc0);
+		brecord_write(start, stub.size(), &stub[0]);
+		brecord_execute(start);
+		recvbyte(); /* wait for termination */
+	}
+	brecord_write_bytes(start, std::min(_obj_stubs_fill_bin_len, length), value);
 };
 
 void cmd_fill(char** argv)

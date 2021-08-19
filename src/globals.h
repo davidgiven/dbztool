@@ -35,11 +35,13 @@ extern void dodgyterm();
 extern void sendbyte(uint8_t c);
 extern void send(const std::string& s);
 extern uint8_t recvbyte();
+extern bool recvpending();
 
 /* B-record protocol. */
 
 extern void brecord_execute(uint32_t addr);
 extern void brecord_write(uint32_t addr, uint8_t count, const uint8_t* data);
+extern void brecord_write_bytes(uint32_t addr, uint8_t count, uint8_t value);
 
 /* Operations */
 
@@ -49,6 +51,7 @@ extern void cmd_cs(char** argv);
 extern void cmd_dump(char** argv);
 extern void cmd_execute(char** argv);
 extern void cmd_fill(char** argv);
+extern void cmd_getsp(char** argv);
 extern void cmd_ping(char** argv);
 extern void cmd_read(char** argv);
 extern void cmd_setreg(char** argv);

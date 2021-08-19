@@ -184,13 +184,22 @@ uint8_t recvbyte()
 	return b;
 }
 
+bool recvpending()
+{
+	struct pollfd p;
+	p.fd = fd;
+	p.events = POLLIN;
+	return poll(&p, 1, 0) > 0;
+}
+
 void send(const std::string& s)
 {
 	for (char c : s)
 	{
 		sendbyte((uint8_t) c);
-		if (recvbyte() != c)
-			error("corrupt transfer");
+		uint8_t b = recvbyte();
+		if (b != c)
+			error("corrupt transfer (got %02x instead of %02x)", b, c);
 	}
 }
 
@@ -210,7 +219,7 @@ void dodgyterm()
 	serialterm.c_oflag = 0;
 	serialterm.c_iflag = IGNPAR;
 
-	cfsetspeed(&serialterm, getbaudrate(SlowBaudRate));
+	cfsetspeed(&serialterm, B19200);
 	int i = tcsetattr(fd, TCSADRAIN, &serialterm);
 	if (i == -1)
 		error("Failed to set up serial port.");
